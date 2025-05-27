@@ -11,11 +11,11 @@ KAFKA_BROKER = "localhost:9092"
 TOPIC_RESPONSE = "calculator_responses"
 
 def iniciar_servidor_ice():
-    logging.info("🧊 Iniciando servidor Ice...")
+    logging.info("Iniciando servidor Ice...")
     return subprocess.Popen(["python", "-m", "calculator.command_handlers", "calculator"])
 
 def verificar_servidor_ice():
-    logging.info("🔎 Verificando servidor Ice...")
+    logging.info("Verificando servidor Ice...")
     intentos = 10
     while intentos > 0:
         try:
@@ -23,26 +23,26 @@ def verificar_servidor_ice():
                 base = communicator.stringToProxy("calculator:tcp -h 127.0.0.1 -p 10000")
                 proxy = Ice.checkedCast(base, Ice.ObjectPrx)
                 if proxy:
-                    logging.info("✅ Servidor Ice en ejecución.")
+                    logging.info("Servidor Ice en ejecución.")
                     return True
         except:
             pass
-        logging.warning("⏳ Esperando al servidor Ice...")
+        logging.warning("Esperando al servidor Ice...")
         time.sleep(2)
         intentos -= 1
-    logging.error("❌ No se pudo conectar con el servidor Ice.")
+    logging.error("No se pudo conectar con el servidor Ice.")
     return False
 
 def iniciar_kafka_consumer():
-    logging.info("🟡 Iniciando consumidor de Kafka...")
+    logging.info("Iniciando consumidor de Kafka...")
     subprocess.run(["python", "calculator/kafka_consumer.py"])
 
 def ejecutar_kafka_producer():
-    logging.info("🟢 Enviando solicitud desde el productor Kafka...")
+    logging.info("Enviando solicitud desde el productor Kafka...")
     subprocess.run(["python", "calculator/kafka_producer.py"])
 
 def escuchar_respuesta_kafka():
-    logging.info("📥 Escuchando respuestas de Kafka...")
+    logging.info("Escuchando respuestas de Kafka...")
     consumer_conf = {
         'bootstrap.servers': KAFKA_BROKER,
         'group.id': 'responder_group',
@@ -61,7 +61,7 @@ def escuchar_respuesta_kafka():
             continue
         try:
             data = json.loads(msg.value().decode("utf-8"))
-            logging.info(f"✅ Respuesta recibida de Kafka: {data}")
+            logging.info(f"Respuesta recibida de Kafka: {data}")
             break
         except Exception as e:
             logging.error(f"Error al procesar la respuesta: {e}")
@@ -92,4 +92,4 @@ if __name__ == "__main__":
 
     # 6. Cierre opcional (detener servidor si quieres)
     server_proc.terminate()
-    logging.info("✅ Flujo completo finalizado.")
+    logging.info("Flujo completo finalizado.")
