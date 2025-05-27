@@ -1,71 +1,95 @@
+import subprocess
 import threading
 import logging
-import subprocess
 import time
 import Ice
-from confluent_kafka import AdminClient
+import json
+from confluent_kafka import Consumer
 
 # Configuración
 KAFKA_BROKER = "localhost:9092"
-TOPIC_REQUEST = "calculator_requests"
 TOPIC_RESPONSE = "calculator_responses"
 
+def iniciar_servidor_ice():
+    logging.info("🧊 Iniciando servidor Ice...")
+    return subprocess.Popen(["python", "-m", "calculator.command_handlers", "calculator"])
+
 def verificar_servidor_ice():
-    """Verifica si el servidor Ice está en ejecución antes de continuar."""
-    logging.info("Verificando servidor Ice...")
-    intentos = 10  # Intentará conectarse hasta 10 veces
+    logging.info("🔎 Verificando servidor Ice...")
+    intentos = 10
     while intentos > 0:
         try:
             with Ice.initialize() as communicator:
                 base = communicator.stringToProxy("calculator:tcp -h 127.0.0.1 -p 10000")
-                calculator = Ice.checkedCast(base, Ice.ObjectPrx)
-                if calculator:
-                    logging.info("Servidor Ice está en ejecución.")
+                proxy = Ice.checkedCast(base, Ice.ObjectPrx)
+                if proxy:
+                    logging.info("✅ Servidor Ice en ejecución.")
                     return True
-        except Exception:
+        except:
             pass
-        logging.warning("Esperando que el servidor Ice inicie...")
-        time.sleep(3)
+        logging.warning("⏳ Esperando al servidor Ice...")
+        time.sleep(2)
         intentos -= 1
-
-    logging.error("No se pudo conectar al servidor Ice. Asegúrate de iniciarlo.")
+    logging.error("❌ No se pudo conectar con el servidor Ice.")
     return False
 
 def iniciar_kafka_consumer():
-    """Ejecuta el consumidor de Kafka en un hilo separado."""
-    logging.info("Iniciando consumidor de Kafka...")
+    logging.info("🟡 Iniciando consumidor de Kafka...")
     subprocess.run(["python", "calculator/kafka_consumer.py"])
 
-def verificar_kafka():
-    """Verifica si Kafka está en ejecución y los topics existen."""
-    logging.info("Verificando conexión con Kafka...")
-    try:
-        admin_client = AdminClient({'bootstrap.servers': KAFKA_BROKER})
-        existing_topics = admin_client.list_topics(timeout=5).topics
+def ejecutar_kafka_producer():
+    logging.info("🟢 Enviando solicitud desde el productor Kafka...")
+    subprocess.run(["python", "calculator/kafka_producer.py"])
 
-        if TOPIC_REQUEST not in existing_topics or TOPIC_RESPONSE not in existing_topics:
-            logging.warning(f"⚠️ No se encontraron los topics {TOPIC_REQUEST} o {TOPIC_RESPONSE}.")
-            return False
-        logging.info("Kafka está en ejecución y los topics existen.")
-        return True
-    except Exception as e:
-        logging.error(f"Error al conectar con Kafka: {e}")
-        return False
+def escuchar_respuesta_kafka():
+    logging.info("📥 Escuchando respuestas de Kafka...")
+    consumer_conf = {
+        'bootstrap.servers': KAFKA_BROKER,
+        'group.id': 'responder_group',
+        'auto.offset.reset': 'earliest'
+    }
+    consumer = Consumer(consumer_conf)
+    consumer.subscribe([TOPIC_RESPONSE])
+    timeout = time.time() + 10  # Espera máxima de 10 segundos
+
+    while time.time() < timeout:
+        msg = consumer.poll(1.0)
+        if msg is None:
+            continue
+        if msg.error():
+            logging.error(f"Error en Kafka: {msg.error()}")
+            continue
+        try:
+            data = json.loads(msg.value().decode("utf-8"))
+            logging.info(f"✅ Respuesta recibida de Kafka: {data}")
+            break
+        except Exception as e:
+            logging.error(f"Error al procesar la respuesta: {e}")
+    consumer.close()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    # Verificar que Kafka y el servidor Ice están en ejecución antes de continuar
-    if not verificar_kafka():
-        logging.error("No se puede iniciar el consumidor sin Kafka.")
-        exit(1)
+    # 1. Iniciar el servidor Ice
+    server_proc = iniciar_servidor_ice()
+    time.sleep(2)
 
+    # 2. Verificar que está listo
     if not verificar_servidor_ice():
+        server_proc.kill()
         exit(1)
 
-    # Iniciar el consumidor de Kafka en un hilo separado
-    kafka_thread = threading.Thread(target=iniciar_kafka_consumer, daemon=True)
-    kafka_thread.start()
+    # 3. Iniciar el consumidor en un hilo
+    consumer_thread = threading.Thread(target=iniciar_kafka_consumer, daemon=True)
+    consumer_thread.start()
+    time.sleep(2)
 
-    # Mantener el programa corriendo hasta que se detenga manualmente
-    kafka_thread.join()
+    # 4. Ejecutar el productor (envía solicitud)
+    ejecutar_kafka_producer()
+
+    # 5. Escuchar la respuesta y mostrarla
+    escuchar_respuesta_kafka()
+
+    # 6. Cierre opcional (detener servidor si quieres)
+    server_proc.terminate()
+    logging.info("✅ Flujo completo finalizado.")
