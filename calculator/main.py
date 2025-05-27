@@ -20,15 +20,15 @@ def verificar_servidor_ice():
                 base = communicator.stringToProxy("calculator:tcp -h 127.0.0.1 -p 10000")
                 calculator = Ice.checkedCast(base, Ice.ObjectPrx)
                 if calculator:
-                    logging.info("✅ Servidor Ice está en ejecución.")
+                    logging.info("Servidor Ice está en ejecución.")
                     return True
         except Exception:
             pass
-        logging.warning("⏳ Esperando que el servidor Ice inicie...")
+        logging.warning("Esperando que el servidor Ice inicie...")
         time.sleep(3)
         intentos -= 1
 
-    logging.error("❌ No se pudo conectar al servidor Ice. Asegúrate de iniciarlo.")
+    logging.error("No se pudo conectar al servidor Ice. Asegúrate de iniciarlo.")
     return False
 
 def iniciar_kafka_consumer():
@@ -46,10 +46,10 @@ def verificar_kafka():
         if TOPIC_REQUEST not in existing_topics or TOPIC_RESPONSE not in existing_topics:
             logging.warning(f"⚠️ No se encontraron los topics {TOPIC_REQUEST} o {TOPIC_RESPONSE}.")
             return False
-        logging.info("✅ Kafka está en ejecución y los topics existen.")
+        logging.info("Kafka está en ejecución y los topics existen.")
         return True
     except Exception as e:
-        logging.error(f"❌ Error al conectar con Kafka: {e}")
+        logging.error(f"Error al conectar con Kafka: {e}")
         return False
 
 if __name__ == "__main__":
