@@ -24,5 +24,25 @@ Inicio de herramientas:
 -
 -
 Producer para enviar los mensajes JSON, es un extra ya que se pueden escribir con comandos
-
-Se inicia kafka, con 'docker-compose up -d', una vez iniciado el docker inciamos el servidor, con su comando, y ya ejecutamos el main que lanzara las herramientas, primero el consumer para deserializar y calcular la operacion, luego el producer que enviara el mensaje con la operacion y por ultimo el servidor recibira la respuesta con la operacion calculada.
+-
+Se inicia kafka, con 'docker-compose up -d', una vez iniciado el docker inciamos el servidor, con su 
+comando, y ya ejecutamos el main que lanzara las herramientas, primero el consumer para deserializar 
+y calcular la operacion, luego el producer que enviara el mensaje con la operacion y por ultimo el 
+servidor recibira la respuesta con la operacion calculada.
+-
+Al intentar hacer commit incluyendo en los archivos el entorno virtual "venv" me daba un error debido a:
+GitHub me estaba dando este aviso importante:
+-
+calculator/.venv/lib/python3.10/site-packages/IcePy.cpython-310-x86_64-linux-gnu.so ocupa 80 MB, y GitHub recomienda no subir archivos mayores a 50 MB.
+-
+Una solución era no subir el entorno virtual (.venv) al repositorio ya que no es recomendable versionar .venv. Ocupa mucho espacio y puede causar errores. En su lugar, hacemos lo siguiente:
+-
+Borramos el .venv del repo (solo del control de versiones):
+git rm -r --cached calculator/.venv
+-
+Añadimos .venv al archivo .gitignore:
+echo ".venv/" >> .gitignore
+git add .gitignore
+git commit -m "Ignorar entorno virtual local (.venv)"
+git push origin main
+-
