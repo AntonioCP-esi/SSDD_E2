@@ -2,7 +2,7 @@
 
 Este proyecto implementa un sistema distribuido de cálculo remoto que utiliza **ZeroC Ice** para invocar operaciones aritméticas 
 básicas y **Apache Kafka** para recibir y enviar peticiones de cálculo serializadas en formato JSON.
--
+
 ---
 
 ## Requisitos previos
@@ -35,10 +35,10 @@ Ejecutar el main(incluye el consumer y el producer):
 # Paso 5
 Recibimos en el servidor y el consumer la respuesta, deserializada y con la operación realizada
 Inicio de herramientas(por separado si hiciese falta):
----
+
 Consumer.py:
 (.venv) rubiocalzada@rubiocalzada-IdeaPad-3-15ITL6:~/Distribuidos/Lab/LabExtra/SSDD_E2/calculator$ python kafka_consumer.py
----
+
 Producer.py:
 (.venv) rubiocalzada@rubiocalzada-IdeaPad-3-15ITL6:~/Distribuidos/Lab/LabExtra/SSDD_E2/calculator$ python kafka_producer.py
 
