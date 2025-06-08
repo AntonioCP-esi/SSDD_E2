@@ -1,7 +1,7 @@
 import Ice
-import RemoteCalculator  # Asegúrate de que está bien importado
+import RemoteCalculator  # Nos aseguramos de que no haya errores con la importaciñon
 
-# Configurar conexión con el servidor Ice
+# Configuramos conexión con el servidor Ice
 ICE_CONFIG = "config/calculator.config"
 
 with Ice.initialize(ICE_CONFIG) as communicator:
@@ -11,6 +11,6 @@ with Ice.initialize(ICE_CONFIG) as communicator:
     if not calculator:
         raise RuntimeError("No se pudo conectar con el servidor Ice")
 
-    # Probar una operación
+    # Probamos una operación
     resultado = calculator.sum(10.0, 20.0)
     print(f"Resultado de la suma: {resultado}")

@@ -10,11 +10,11 @@ class Server(Ice.Application):
         self.logger = logging.getLogger(__file__)
 
     def run(self, args: list[str]) -> int:
-        # Iniciar el consumidor de Kafka en un hilo aparte
+        # Iniciamos el consumidor de Kafka en un hilo aparte
         print("Iniciando consumidor de Kafka automáticamente...")
         threading.Thread(target=self.iniciar_kafka_consumer, daemon=True).start()
 
-        # Iniciar el servidor Ice
+        # Iniciamos el servidor Ice
         servant = Calculator()
         adapter = self.communicator().createObjectAdapter("calculator")
         proxy = adapter.add(servant, self.communicator().stringToIdentity("calculator"))

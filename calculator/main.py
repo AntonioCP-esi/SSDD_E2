@@ -5,10 +5,11 @@ import time
 import json
 from confluent_kafka import Consumer
 
-# Configuración
+# Primero la configuración de Kafka
 KAFKA_BROKER = "localhost:9092"
 TOPIC_RESPONSE = "calculator_responses"
 
+# Inciamos las herramientas
 def iniciar_kafka_consumer():
     logging.info("Iniciando consumidor de Kafka...")
     subprocess.run(["python", "calculator/kafka_consumer.py"])
@@ -43,6 +44,7 @@ def escuchar_respuesta_kafka():
             logging.error(f"Error al procesar la respuesta: {e}")
     consumer.close()
 
+# Flujo principal para el lanzamiento de los procesos
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 

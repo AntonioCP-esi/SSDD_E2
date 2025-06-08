@@ -4,12 +4,12 @@ import json
 import Ice
 import RemoteCalculator  # Importamos la interfaz de Ice
 
-# Configuración de Kafka
+# Primero tenemos la configuración de Kafka
 KAFKA_BROKER = "localhost:9092"
 TOPIC_REQUEST = "calculator_requests"
 TOPIC_RESPONSE = "calculator_responses"
 
-# Asegurar que los topics existen antes de usarlos
+# Luego aseguramos que los topics existen antes de usarlos
 admin_client = AdminClient({'bootstrap.servers': KAFKA_BROKER})
 existing_topics = admin_client.list_topics().topics
 
@@ -18,16 +18,16 @@ for topic in [TOPIC_REQUEST, TOPIC_RESPONSE]:
         print(f"Creando topic: {topic}")
         admin_client.create_topics([NewTopic(topic, num_partitions=1, replication_factor=1)])
 
-# Configurar el consumidor de Kafka
+# Configuramos el consumidor de Kafka
 consumer_conf = {
     'bootstrap.servers': KAFKA_BROKER,
     'group.id': 'calculator_group',
-    'auto.offset.reset': 'earliest'  # Asegura que lee desde el inicio
+    'auto.offset.reset': 'earliest'  # Aseguramos que lee desde el inicio
 }
 consumer = Consumer(consumer_conf)
 consumer.subscribe([TOPIC_REQUEST])
 
-# Validar mensajes entrantes
+# Y validamos los mensajes entrantes
 def validar_peticion(request):
     """Verifica que la petición tiene los campos correctos."""
     if not isinstance(request, dict):
@@ -44,7 +44,7 @@ def validar_peticion(request):
         return False, "Los operandos deben ser números"
     return True, None
 
-# Configurar conexión con Ice
+# Después configuramos la conexión con Ice
 ICE_CONFIG = "config/calculator.config"
 with Ice.initialize(ICE_CONFIG) as communicator:
     base = communicator.stringToProxy("calculator:tcp -h 127.0.0.1 -p 10000")
@@ -63,7 +63,7 @@ with Ice.initialize(ICE_CONFIG) as communicator:
             print(f"Error en Kafka: {msg.error()}")
             continue
 
-        # 🔹 Depuración: Mostrar el mensaje en bruto antes de procesarlo
+        # Depuración: Mostramos el mensaje en bruto antes de procesarlo
         print(f"Mensaje recibido en Kafka (RAW): {msg.value()}")
 
         try:
@@ -95,7 +95,7 @@ with Ice.initialize(ICE_CONFIG) as communicator:
             response = {"id": request.get("id", "unknown"), "status": False, "error": str(e)}
             print(f"Error al procesar la solicitud: {str(e)}")
 
-        # Publicar la respuesta en Kafka
+        # Por último publicamos la respuesta en Kafka
         producer_conf = {'bootstrap.servers': KAFKA_BROKER}
         producer = Producer(producer_conf)
         producer.produce(TOPIC_RESPONSE, json.dumps(response).encode('utf-8'))

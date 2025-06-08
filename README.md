@@ -15,7 +15,7 @@ básicas y **Apache Kafka** para recibir y enviar peticiones de cálculo seriali
 ---
 # Paso 1
 
-Se inicia el docker(kafka): docker-compose up -d
+Se inicia el docker(kafka) desde la raíz del repositorio (donde está `docker-compose.yml`: docker-compose up -d
 
 # Paso 2
 Se inicia el servidor Ice:
