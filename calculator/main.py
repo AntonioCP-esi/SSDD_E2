@@ -37,7 +37,7 @@ def escuchar_respuesta_kafka():
             continue
         try:
             data = json.loads(msg.value().decode("utf-8"))
-            logging.info(f"✅ Respuesta recibida de Kafka: {data}")
+            logging.info(f"Respuesta recibida de Kafka: {data}")
             break
         except Exception as e:
             logging.error(f"Error al procesar la respuesta: {e}")
@@ -57,4 +57,4 @@ if __name__ == "__main__":
     # 3. Escuchar la respuesta y mostrarla
     escuchar_respuesta_kafka()
 
-    logging.info("✅ Flujo completo finalizado.")
+    logging.info("Flujo completo finalizado.")

@@ -30,17 +30,18 @@ source .venv/bin/activate
 
 # Paso 4
 Ejecutar el main(incluye el consumer y el producer):
-(.venv) rubiocalzada@rubiocalzada-IdeaPad-3-15ITL6:~/Distribuidos/Lab/LabExtra/SSDD_E2$ python calculator/main.py
+Dentro de la carpeta "SSDD_E2" ejecutamos el comando:
+python calculator/main.py
 
 # Paso 5
 Recibimos en el servidor y el consumer la respuesta, deserializada y con la operación realizada
 Inicio de herramientas(por separado si hiciese falta):
 
 Consumer.py:
-(.venv) rubiocalzada@rubiocalzada-IdeaPad-3-15ITL6:~/Distribuidos/Lab/LabExtra/SSDD_E2/calculator$ python kafka_consumer.py
+python kafka_consumer.py
 
 Producer.py:
-(.venv) rubiocalzada@rubiocalzada-IdeaPad-3-15ITL6:~/Distribuidos/Lab/LabExtra/SSDD_E2/calculator$ python kafka_producer.py
+python kafka_producer.py
 
 
 La herramienta Producer es un extra, ya que realmente para enviar los mensajes se utiliza un formato JSON con la operación a realizar. Es conveniente ya que unicamente cambiamos el mensaje que queremos mandar dentro de la herramienta sin tener que escribir el comando.
@@ -65,5 +66,7 @@ Añadimos .venv al archivo .gitignore:
 echo ".venv/" >> .gitignore
 git add .gitignore
 git commit -m "Ignorar entorno virtual local (.venv)"
+
+Y lo subíamos al repositorio
 git push origin main
 
