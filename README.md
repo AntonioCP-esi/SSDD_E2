@@ -11,7 +11,12 @@ básicas y **Apache Kafka** para recibir y enviar peticiones de cálculo seriali
 - Docker y Docker Compose
 - Apache Kafka (iniciado vía Docker)
 - Entorno virtual Python (`.venv`)
--
+
+## Instalación de dependencias
+
+Antes de ejecutar el proyecto, asegúrate de tener un entorno virtual activo (opcional pero recomendable). Luego, instala las dependencias con:
+pip install -r requirements.txt
+
 ---
 # Paso 1
 

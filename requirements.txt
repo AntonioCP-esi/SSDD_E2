@@ -1,0 +1,8 @@
+confluent-kafka==2.10.0
+grpcio==1.67.1
+grpcio-tools==1.67.1
+kafka-python==2.0.6
+protobuf==5.28.3
+setuptools==75.3.0
+-e git+https://github.com/AntonioCP-esi/LabDS.git@2083a32fe4ad616b96b91a1249ca59be8df21448#egg=ssdd_calculator
+zeroc-ice==3.7.10.1
